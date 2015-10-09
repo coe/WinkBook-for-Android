@@ -81,7 +81,7 @@ public class PageActivity extends AppCompatActivity {
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
         //とりあえずPDFをPdfRendererで表示
-        loadPdf();
+//        loadPdf();
     }
 
     @Override

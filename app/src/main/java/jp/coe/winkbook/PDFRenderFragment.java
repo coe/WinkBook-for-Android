@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -89,7 +91,10 @@ public class PDFRenderFragment extends Fragment {
      */
     private void openRenderer(Activity activity) throws IOException {
         // Reading a PDF file from the assets directory.
-        fileDescriptor = activity.getAssets().openFd("canon_in_d.pdf").getParcelFileDescriptor();
+        File sdcard = Environment.getExternalStorageDirectory();
+
+        fileDescriptor = ParcelFileDescriptor.open(new File(sdcard, "ashita01_a_sd.pdf"), ParcelFileDescriptor.MODE_READ_ONLY);
+//        fileDescriptor = activity.getAssets().openFd("canon_in_d.pdf").getParcelFileDescriptor();
 
         // This is the PdfRenderer we use to render the PDF.
         pdfRenderer = new PdfRenderer(fileDescriptor);
