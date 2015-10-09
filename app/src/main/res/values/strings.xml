@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">WinkBook</string>
     <string name="action_settings">Settings</string>
+
+    <string name="title_activity_page">PageActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">item Detail</string>
 </resources>
