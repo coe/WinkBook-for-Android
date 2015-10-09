@@ -1,18 +1,39 @@
 package jp.coe.winkbook;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfRenderer;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+/*
+ *
+ * ページを表示する
+ * フラグメント差し替えでPDFやepubを表示出来るといいな
+ */
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class PageActivity extends AppCompatActivity {
+
+    private static final String TAG = "PageActivity";
+
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -58,6 +79,9 @@ public class PageActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        //とりあえずPDFをPdfRendererで表示
+        loadPdf();
     }
 
     @Override
@@ -164,5 +188,66 @@ public class PageActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    private void loadPdf(){
+        File sdcard = Environment.getExternalStorageDirectory();
+        Log.d(TAG,"path "+sdcard.getPath());
+        ParcelFileDescriptor fd = null;
+        PdfRenderer renderer = null;
+        PdfRenderer.Page page = null;
+        try {
+            // SDカード直下からtest.pdfを読み込み、1ページ目を取得
+            try {
+                fd = ParcelFileDescriptor.open(new File(sdcard, "ashita01_a_sd.pdf"), ParcelFileDescriptor.MODE_READ_ONLY);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                renderer = new PdfRenderer(fd);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            page = renderer.openPage(0);
+
+            ImageView view = (ImageView) findViewById(R.id.fullscreen_content);
+            int viewWidth = view.getWidth();
+            int viewHeight = view.getHeight();
+            int pdfWidth = page.getWidth();
+            int pdfHeight = page.getHeight();
+            Log.i("test", "viewWidth=" + viewWidth + ", viewHeight=" + viewHeight
+                    + ", pdfWidth=" + pdfWidth + ", pdfHeight=" + pdfHeight);
+
+            // 縦横比合うように計算
+            float wRatio = 1;//viewWidth / pdfWidth;
+            float hRatio = 1;//viewHeight / pdfHeight;
+            if (wRatio <= hRatio) {
+                viewHeight = (int) Math.ceil(pdfHeight * wRatio);
+            } else {
+                viewWidth = (int) Math.ceil(pdfWidth * hRatio);
+            }
+            Log.i("test", "viewWidth=" + viewWidth + ", viewHeight=" + viewHeight);
+
+            // Bitmap生成して描画
+            Bitmap bitmap = Bitmap.createBitmap(pdfWidth, pdfHeight, Bitmap.Config.ARGB_8888);
+            page.render(bitmap, new Rect(0, 0, pdfWidth, pdfHeight), null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+
+            view.setImageBitmap(bitmap);
+        } finally {
+            try {
+                if (fd != null) {
+                    fd.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (page != null) {
+                page.close();
+            }
+            if (renderer != null) {
+                renderer.close();
+            }
+        }
     }
 }
