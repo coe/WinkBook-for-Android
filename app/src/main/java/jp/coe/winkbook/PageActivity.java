@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.v7.app.ActionBar;
@@ -29,7 +30,7 @@ import java.io.IOException;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class PageActivity extends AppCompatActivity {
+public class PageActivity extends AppCompatActivity implements WinkFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "PageActivity";
 
@@ -249,5 +250,10 @@ public class PageActivity extends AppCompatActivity {
                 renderer.close();
             }
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.d(TAG,"onFragmentInteraction");
     }
 }
