@@ -8,6 +8,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import java.io.File;
+
 
 /**
  * An activity representing a list of Items. This activity
@@ -74,7 +76,7 @@ public class ItemListActivity extends AppCompatActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(File file) {
         //ファイルを開く
         Intent detailIntent = new Intent(this, PageActivity.class);
 //        detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
