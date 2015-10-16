@@ -116,6 +116,8 @@ public class WinkFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+
     }
 
     @Override
@@ -137,6 +139,8 @@ public class WinkFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void onClose();
+
     }
 
 
@@ -208,11 +212,13 @@ public class WinkFragment extends Fragment {
         @Override
         public void onNewItem(int faceId, Face face) {
             Log.d(TAG, "onNewItem");
-            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability())
+            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability()) {
                 Log.e(TAG, "目閉じてる！");
+                mListener.onClose();
+            }
 
             Log.d(TAG, "getIsLeftEyeOpenProbability "+face.getIsLeftEyeOpenProbability());
-            Log.d(TAG, "getIsRightEyeOpenProbability "+face.getIsRightEyeOpenProbability());
+            Log.d(TAG, "getIsRightEyeOpenProbability " + face.getIsRightEyeOpenProbability());
         }
 
         /**
@@ -221,10 +227,13 @@ public class WinkFragment extends Fragment {
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             Log.d(TAG, "onUpdate");
-            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability())
+            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability()) {
                 Log.e(TAG, "目閉じてる！");
+                mListener.onClose();
+            }
             Log.d(TAG, "getIsLeftEyeOpenProbability " + face.getIsLeftEyeOpenProbability());
             Log.d(TAG, "getIsRightEyeOpenProbability "+face.getIsRightEyeOpenProbability());
+
         }
 
         /**

@@ -30,7 +30,7 @@ import java.io.IOException;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class PageActivity extends AppCompatActivity implements WinkFragment.OnFragmentInteractionListener {
+public class PageActivity extends AppCompatActivity implements WinkFragment.OnFragmentInteractionListener,PDFRenderFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "PageActivity";
 
@@ -56,6 +56,12 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
+
+    //PDF表示フラグメント
+    private PDFRenderFragment mPDFRenderFragment;
+
+    private final Handler mMainThreadHandler = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +155,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
+
 
     @SuppressLint("InlinedApi")
     private void show() {
@@ -253,7 +260,24 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     }
 
     @Override
+    public void pdfRenderFragment(PDFRenderFragment fragment) {
+        mPDFRenderFragment = fragment;
+    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
+
         Log.d(TAG,"onFragmentInteraction");
+    }
+
+    @Override
+    public void onClose() {
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mPDFRenderFragment.nextPage();
+
+            }
+        });
     }
 }

@@ -3,6 +3,7 @@ package jp.coe.winkbook;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -18,7 +19,9 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class PDFRenderFragment extends Fragment {
+public class PDFRenderFragment extends Fragment implements WIKPageInterface {
+
+    private static final String TAG = "PDFRenderFragment";
 
     private ParcelFileDescriptor fileDescriptor;
     private PdfRenderer pdfRenderer;
@@ -26,6 +29,16 @@ public class PDFRenderFragment extends Fragment {
     private ImageView image;
     private Button btnPrevious;
     private Button btnNext;
+
+    private OnFragmentInteractionListener mListener;
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void pdfRenderFragment(PDFRenderFragment fragment);
+        public void onFragmentInteraction(Uri uri);
+        public void onClose();
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,13 +70,32 @@ public class PDFRenderFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            openRenderer(activity);
+            mListener = (OnFragmentInteractionListener) activity;
+            mListener.pdfRenderFragment(this);
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+
+        try {
+            openRenderer();
         } catch (IOException e) {
             e.printStackTrace();
             Log.i("Fragment", "Error occurred!");
             Log.e("Fragment", e.getMessage());
-            activity.finish();
+//            activity.finish();
         }
+    }
+
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -86,10 +118,9 @@ public class PDFRenderFragment extends Fragment {
 
     /**
      * Create a PDF renderer
-     * @param activity
      * @throws IOException
      */
-    private void openRenderer(Activity activity) throws IOException {
+    private void openRenderer() throws IOException {
         // Reading a PDF file from the assets directory.
         File sdcard = Environment.getExternalStorageDirectory();
 
@@ -152,11 +183,30 @@ public class PDFRenderFragment extends Fragment {
             public void onClick(View v) {
 
                 if (i < 0) {//go to previous page
-                    showPage(currentPage.getIndex() - 1);
+                    backPage();
                 } else {
-                    showPage(currentPage.getIndex() + 1);
+                    nextPage();
                 }
             }
         };
+    }
+
+    @Override
+    public void nextPage() {
+        showPage(currentPage.getIndex() + 1);
+        Log.d(TAG,"nextPage");
+    }
+
+    @Override
+    public void backPage() {
+        showPage(currentPage.getIndex() - 1);
+        Log.d(TAG,"backPage");
+
+    }
+
+    @Override
+    public void close() {
+        Log.d(TAG,"close");
+
     }
 }
