@@ -199,6 +199,7 @@ public class PDFRenderFragment extends Fragment implements WIKPageInterface {
 
     @Override
     public void backPage() {
+        if(currentPage.getIndex() == 0) return;
         showPage(currentPage.getIndex() - 1);
         Log.d(TAG,"backPage");
 

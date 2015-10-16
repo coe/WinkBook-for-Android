@@ -12,11 +12,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,6 +26,7 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
 import java.io.IOException;
+import java.util.Date;
 
 import jp.coe.winkbook.ui.camera.CameraSourcePreview;
 
@@ -140,6 +138,7 @@ public class WinkFragment extends Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
         public void onClose();
+        public void onLongClose();
 
     }
 
@@ -158,7 +157,7 @@ public class WinkFragment extends Fragment {
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
-    private static final float THRESHOLD = 0.2f;
+    private static final float THRESHOLD = 0.35f;
 
     /**
      * Restarts the camera.
@@ -195,12 +194,20 @@ public class WinkFragment extends Fragment {
         }
     }
 
+    private boolean closeFlg = false;
+
+    private Date firstRightEyeCloseDate = new Date(0);
+    private Date firstLeftEyeCloseDate = new Date(0);
+
+    private final int LONG_CLOSE_MILL = 2000;
+    private final int SHORT_CLOSE_MILL = 300;
+
+
     /**
      * Face tracker for each detected individual. This maintains a face graphic within the app's
      * associated face overlay.
      */
     private class WinkFaceTracker extends Tracker<Face> {
-
 
         WinkFaceTracker(Face face) {
             Log.d(TAG, "WinkFaceTracker instance");
@@ -212,13 +219,29 @@ public class WinkFragment extends Fragment {
         @Override
         public void onNewItem(int faceId, Face face) {
             Log.d(TAG, "onNewItem");
-            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability()) {
-                Log.e(TAG, "目閉じてる！");
-                mListener.onClose();
-            }
+//            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability()) {
+//                Log.e(TAG, "目閉じてる！");
+//                mListener.onClose();
+//                closeFlg = true;
+//            }
 
             Log.d(TAG, "getIsLeftEyeOpenProbability "+face.getIsLeftEyeOpenProbability());
             Log.d(TAG, "getIsRightEyeOpenProbability " + face.getIsRightEyeOpenProbability());
+        }
+
+        private boolean isLeftClose(Face face){
+            return THRESHOLD > face.getIsLeftEyeOpenProbability() && face.getIsLeftEyeOpenProbability() > 0;
+        }
+
+        private boolean isRightClose(Face face){
+            return THRESHOLD > face.getIsRightEyeOpenProbability() && face.getIsRightEyeOpenProbability() > 0;
+        }
+
+        private void reset(){
+            Log.d(TAG,"reset");
+
+            firstLeftEyeCloseDate = new Date(Long.MAX_VALUE);
+            firstRightEyeCloseDate = new Date(Long.MAX_VALUE);
         }
 
         /**
@@ -227,12 +250,69 @@ public class WinkFragment extends Fragment {
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             Log.d(TAG, "onUpdate");
-            if(THRESHOLD > face.getIsLeftEyeOpenProbability() && THRESHOLD > face.getIsRightEyeOpenProbability()) {
-                Log.e(TAG, "目閉じてる！");
-                mListener.onClose();
-            }
+
             Log.d(TAG, "getIsLeftEyeOpenProbability " + face.getIsLeftEyeOpenProbability());
             Log.d(TAG, "getIsRightEyeOpenProbability "+face.getIsRightEyeOpenProbability());
+
+            //どちらも正の値でなければリターン
+            if(face.getIsLeftEyeOpenProbability() < 0 || face.getIsRightEyeOpenProbability() < 0) return;
+
+            //初めて目を閉じた時間
+            if(firstRightEyeCloseDate.compareTo(new Date(Long.MAX_VALUE)) == 0 && isLeftClose(face)){
+                firstLeftEyeCloseDate = new Date(System.currentTimeMillis());
+            }
+
+            if(firstRightEyeCloseDate.compareTo(new Date(Long.MAX_VALUE)) == 0 && isRightClose(face)){
+                firstRightEyeCloseDate = new Date(System.currentTimeMillis());
+            }
+
+            //今両目を閉じているか
+            if(isLeftClose(face) && isRightClose(face)) {
+                Log.d(TAG,"長く目を閉じるチェック");
+
+                //長めに閉じているか
+                final Date now = new Date(System.currentTimeMillis() - LONG_CLOSE_MILL);
+                Log.d(TAG,"firstLeftEyeCloseDate " + firstLeftEyeCloseDate.getTime());
+                Log.d(TAG,"now " + now.getTime());
+
+                int diff = now.compareTo(firstLeftEyeCloseDate);
+                int diff2 = now.compareTo(firstRightEyeCloseDate);
+
+                if (diff > 0 && diff2 > 0) {
+                    //今の時刻より引いてある日時が、firstLeftEyeCloseDateよりも
+                    Log.d(TAG,"長く目を閉じる");
+                    reset();
+                    mListener.onLongClose();
+                    return;
+
+                }
+
+            }
+
+            //短く目を閉じているか
+            final Date now = new Date(System.currentTimeMillis() - SHORT_CLOSE_MILL);
+            int diff = now.compareTo(firstLeftEyeCloseDate);
+            int diff2 = now.compareTo(firstRightEyeCloseDate);
+
+            Log.d(TAG,"軽く目を閉じるチェック");
+            Log.d(TAG,"firstLeftEyeCloseDate " + firstLeftEyeCloseDate.getTime());
+            Log.d(TAG,"now " + now.getTime());
+
+            if (diff > 0 && diff2 > 0) {
+                Log.d(TAG,"軽く目を閉じるチェック");
+                if(!isRightClose(face) && !isLeftClose(face) ) {
+                    Log.d(TAG,"軽く目を閉じる");
+                    mListener.onClose();
+                    reset();
+                    return;
+                }
+            }
+
+            if(!isLeftClose(face) && !isRightClose(face)) {
+                reset();
+            }
+
+
 
         }
 

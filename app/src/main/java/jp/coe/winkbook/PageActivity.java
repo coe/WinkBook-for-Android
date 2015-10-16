@@ -280,4 +280,15 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
             }
         });
     }
+
+    @Override
+    public void onLongClose() {
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mPDFRenderFragment.backPage();
+
+            }
+        });
+    }
 }
