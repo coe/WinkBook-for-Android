@@ -30,7 +30,7 @@ import java.io.IOException;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class PageActivity extends AppCompatActivity implements WinkFragment.OnFragmentInteractionListener,PDFRenderFragment.OnFragmentInteractionListener {
+public class PageActivity extends AppCompatActivity implements WinkFragment.OnFragmentInteractionListener,PageOnFragmentInteractionListener {
 
     private static final String TAG = "PageActivity";
 
@@ -58,7 +58,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     private boolean mVisible;
 
     //PDF表示フラグメント
-    private PDFRenderFragment mPDFRenderFragment;
+    private WIKPageInterface mPDFRenderFragment;
 
     private final Handler mMainThreadHandler = new Handler();
 
@@ -260,7 +260,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     }
 
     @Override
-    public void pdfRenderFragment(PDFRenderFragment fragment) {
+    public void renderFragment(WIKPageInterface fragment) {
         mPDFRenderFragment = fragment;
     }
 

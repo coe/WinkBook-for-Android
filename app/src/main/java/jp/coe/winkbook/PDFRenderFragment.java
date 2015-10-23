@@ -30,15 +30,8 @@ public class PDFRenderFragment extends Fragment implements WIKPageInterface {
     private Button btnPrevious;
     private Button btnNext;
 
-    private OnFragmentInteractionListener mListener;
+    private PageOnFragmentInteractionListener mListener;
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void pdfRenderFragment(PDFRenderFragment fragment);
-        public void onFragmentInteraction(Uri uri);
-        public void onClose();
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,8 +63,8 @@ public class PDFRenderFragment extends Fragment implements WIKPageInterface {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
-            mListener.pdfRenderFragment(this);
+            mListener = (PageOnFragmentInteractionListener) activity;
+            mListener.renderFragment(this);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");

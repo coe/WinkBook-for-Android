@@ -12,7 +12,7 @@
         android:layout_height="match_parent" android:keepScreenOn="true"
         android:gravity="center" />
     <fragment
-        android:name="jp.coe.winkbook.PDFRenderFragment"
+        android:name="jp.coe.winkbook.EpubRenderFragment"
         android:id="@+id/fullscreen_content" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true"
         android:gravity="center" />
