@@ -113,16 +113,14 @@ public class ItemListFragment extends ListFragment {
             mFiles = Arrays.asList(dir.listFiles());
             Log.d(TAG,"mFiles " + mFiles.size());
 
-            //TODO:ファイルの最後のパスを表示名にする
-
             // TODO: replace with a real list adapter.
 
-            setListAdapter(new ArrayAdapter<File>(
-                            getActivity(),
-                            android.R.layout.simple_list_item_activated_1,
-                            android.R.id.text1,
-                            mFiles)
-            );
+            FileArrayAdapter adapter = new FileArrayAdapter(getActivity(),
+                    R.layout.list_item,
+                    mFiles
+                    );
+
+            setListAdapter(adapter);
         }
     }
 
