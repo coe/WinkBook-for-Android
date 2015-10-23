@@ -3,6 +3,7 @@ package jp.coe.winkbook;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -60,8 +61,9 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
     private Button btnPrevious;
     private Button btnNext;
 
-//    private Bitmap currentBitmap;
     private String mCurrentPageString;
+    private int currentPage = 0;
+    private Book mBook;
 
     /**
      * Use this factory method to create a new instance of
@@ -98,8 +100,8 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
         btnNext = (Button) view.findViewById(R.id.btn_next);
 
         //set buttons event
-//        btnPrevious.setOnClickListener(onActionListener(-1)); //previous button clicked
-//        btnNext.setOnClickListener(onActionListener(1)); //next button clicked
+        btnPrevious.setOnClickListener(onActionListener(-1)); //previous button clicked
+        btnNext.setOnClickListener(onActionListener(1)); //next button clicked
 
         int index = 0;
         // If there is a savedInstanceState (screen orientations, etc.), we restore the page index.
@@ -107,12 +109,40 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
             index = savedInstanceState.getInt("current_page", 0);
         }
 
-        if(mCurrentPageString != null){
-//            webView.loadData(mCurrentPageString,"text/html","UTF-8");
-            webView.loadDataWithBaseURL("about:blank",mCurrentPageString,"text/html","UTF-8",null);
+        showPage(index);
+    }
+
+    /**
+     * Shows the specified page of PDF file to screen
+     * @param index The page index.
+     */
+    private void showPage(int index) {
+
+        Resource r = mBook.getSpine().getResource(index);
+        String text = null;
+        try {
+            text = new String(r.getData());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-//        showPage(index);
+        if(text != null){
+            webView.loadDataWithBaseURL("about:blank",text,"text/html","UTF-8",null);
+        }
+    }
+
+    private View.OnClickListener onActionListener(final int i) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (i < 0) {//go to previous page
+                    backPage();
+                } else {
+                    nextPage();
+                }
+            }
+        };
     }
 
     @Override
@@ -158,11 +188,11 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
             InputStream epubInputStream = new FileInputStream(file);
 
-            Book book = (new EpubReader()).readEpub(epubInputStream);
+            mBook = (new EpubReader()).readEpub(epubInputStream);
 
             // Log the book's coverimage property
 
-            Bitmap coverImage = BitmapFactory.decodeStream(book.getCoverImage()
+            Bitmap coverImage = BitmapFactory.decodeStream(mBook.getCoverImage()
                     .getInputStream());
 
             Log.i("epublib", "Coverimage is " + coverImage.getWidth() + " by "
@@ -170,18 +200,16 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
             // Log the tale of contents
 
-            logTableOfContents(book.getTableOfContents().getTocReferences(), 0);
-
-            book.getContents().get(3).getHref();
+            logTableOfContents(mBook.getTableOfContents().getTocReferences(), 0);
 
 //            byte[] data = book.getContents().get(3).getData();
 //
 //            Bitmap page = BitmapFactory.decodeByteArray(data,0,data.length);
 
-            Resource r = book.getSpine().getResource(3);
-            String text = new String(r.getData());
-
-            mCurrentPageString = text;//new String(book.getContents().get(3).getData());
+//            Resource r = book.getSpine().getResource(3);
+//            String text = new String(r.getData());
+//
+//            mCurrentPageString = text;//new String(book.getContents().get(3).getData());
 
 
         } catch (ClassCastException e) {
@@ -232,18 +260,21 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
     @Override
     public void nextPage() {
-        Log.d(TAG, "nextPage");
+        Log.d(TAG,"nextPage");
+        showPage(++currentPage);
     }
 
     @Override
     public void backPage() {
-        Log.d(TAG, "backPage");
+        Log.d(TAG,"backPage");
+        if(currentPage == 0) return;
+        showPage(--currentPage);
 
     }
 
     @Override
     public void close() {
-        Log.d(TAG, "close");
+        Log.d(TAG,"close");
 
     }
 }
