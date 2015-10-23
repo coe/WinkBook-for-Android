@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -26,6 +27,7 @@ import java.io.Reader;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubReader;
 
@@ -54,11 +56,12 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
     private PageOnFragmentInteractionListener mListener;
 
     //UI
-    private ImageView image;
+    private WebView webView;
     private Button btnPrevious;
     private Button btnNext;
 
-    private Bitmap currentBitmap;
+//    private Bitmap currentBitmap;
+    private String mCurrentPageString;
 
     /**
      * Use this factory method to create a new instance of
@@ -90,7 +93,7 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
         super.onViewCreated(view, savedInstanceState);
         // Retain view references.
-        image = (ImageView) view.findViewById(R.id.image);
+        webView = (WebView) view.findViewById(R.id.webview);
         btnPrevious = (Button) view.findViewById(R.id.btn_previous);
         btnNext = (Button) view.findViewById(R.id.btn_next);
 
@@ -103,11 +106,12 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
         if (null != savedInstanceState) {
             index = savedInstanceState.getInt("current_page", 0);
         }
-        if(currentBitmap != null) {
-            Log.d(TAG,"currentBitmap "+currentBitmap.getWidth() + " : " + currentBitmap.getHeight());
-            image.setImageBitmap(currentBitmap);
 
+        if(mCurrentPageString != null){
+//            webView.loadData(mCurrentPageString,"text/html","UTF-8");
+            webView.loadDataWithBaseURL("about:blank",mCurrentPageString,"text/html","UTF-8",null);
         }
+
 //        showPage(index);
     }
 
@@ -168,9 +172,16 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
             logTableOfContents(book.getTableOfContents().getTocReferences(), 0);
 
-//            book.getContents().get(0).getData();
+            book.getContents().get(3).getHref();
 
-            currentBitmap = coverImage;
+//            byte[] data = book.getContents().get(3).getData();
+//
+//            Bitmap page = BitmapFactory.decodeByteArray(data,0,data.length);
+
+            Resource r = book.getSpine().getResource(3);
+            String text = new String(r.getData());
+
+            mCurrentPageString = text;//new String(book.getContents().get(3).getData());
 
 
         } catch (ClassCastException e) {
