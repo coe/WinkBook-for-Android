@@ -1,12 +1,18 @@
 package jp.coe.winkbook;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.io.File;
@@ -28,6 +34,9 @@ import java.util.ListIterator;
  */
 public class ItemListFragment extends ListFragment {
 
+    private static final String TAG = "ItemListFragment";
+
+
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -46,6 +55,9 @@ public class ItemListFragment extends ListFragment {
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     private List<File> mFiles = null;
+
+    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
+
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -80,22 +92,39 @@ public class ItemListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        checkFilePermission();
+
+
+   }
+
+    private void checkFilePermission(){
         //TODO:ファイルをモデルとして扱う
         File dir = Environment.getExternalStorageDirectory();
+        Log.d(TAG, "getExternalStorageDirectory " + dir.getPath());
 
-        //ファイル一覧
-        mFiles = Arrays.asList(dir.listFiles());
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST_READ_PHONE_STATE
+            );
 
-        //TODO:ファイルの最後のパスを表示名にする
+        } else {
+            mFiles = Arrays.asList(dir.listFiles());
+            Log.d(TAG,"mFiles " + mFiles.size());
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<File>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                        mFiles)
-        );
-   }
+            //TODO:ファイルの最後のパスを表示名にする
+
+            // TODO: replace with a real list adapter.
+
+            setListAdapter(new ArrayAdapter<File>(
+                            getActivity(),
+                            android.R.layout.simple_list_item_activated_1,
+                            android.R.id.text1,
+                            mFiles)
+            );
+        }
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -144,6 +173,13 @@ public class ItemListFragment extends ListFragment {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult");
+        checkFilePermission();
     }
 
     /**
