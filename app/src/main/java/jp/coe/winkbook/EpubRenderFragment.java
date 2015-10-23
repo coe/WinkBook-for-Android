@@ -7,16 +7,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
@@ -47,6 +53,13 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
     private PageOnFragmentInteractionListener mListener;
 
+    //UI
+    private ImageView image;
+    private Button btnPrevious;
+    private Button btnNext;
+
+    private Bitmap currentBitmap;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -72,6 +85,33 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        Log.d(TAG,"onViewCreated");
+
+        super.onViewCreated(view, savedInstanceState);
+        // Retain view references.
+        image = (ImageView) view.findViewById(R.id.image);
+        btnPrevious = (Button) view.findViewById(R.id.btn_previous);
+        btnNext = (Button) view.findViewById(R.id.btn_next);
+
+        //set buttons event
+//        btnPrevious.setOnClickListener(onActionListener(-1)); //previous button clicked
+//        btnNext.setOnClickListener(onActionListener(1)); //next button clicked
+
+        int index = 0;
+        // If there is a savedInstanceState (screen orientations, etc.), we restore the page index.
+        if (null != savedInstanceState) {
+            index = savedInstanceState.getInt("current_page", 0);
+        }
+        if(currentBitmap != null) {
+            Log.d(TAG,"currentBitmap "+currentBitmap.getWidth() + " : " + currentBitmap.getHeight());
+            image.setImageBitmap(currentBitmap);
+
+        }
+//        showPage(index);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate");
 
@@ -93,7 +133,7 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        Log.d(TAG,"onButtonPressed");
+        Log.d(TAG, "onButtonPressed");
 
     }
 
@@ -119,17 +159,19 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
             // Log the book's coverimage property
 
             Bitmap coverImage = BitmapFactory.decodeStream(book.getCoverImage()
-
                     .getInputStream());
 
             Log.i("epublib", "Coverimage is " + coverImage.getWidth() + " by "
-
                     + coverImage.getHeight() + " pixels");
-
 
             // Log the tale of contents
 
             logTableOfContents(book.getTableOfContents().getTocReferences(), 0);
+
+//            book.getContents().get(0).getData();
+
+            currentBitmap = coverImage;
+
 
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -167,6 +209,7 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
         }
 
     }
+
 
     @Override
     public void onDetach() {
