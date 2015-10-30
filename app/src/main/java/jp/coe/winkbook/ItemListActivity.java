@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.File;
+import java.util.LinkedList;
 
 
 public class ItemListActivity extends AppCompatActivity
@@ -28,6 +29,8 @@ public class ItemListActivity extends AppCompatActivity
 
     private ItemListFragment mFragment;
 
+    private LinkedList mTitleList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,9 @@ public class ItemListActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        mTitleList = new LinkedList();
+        mTitleList.addLast(getTitle());
+        toolbar.setTitle((String)mTitleList.getLast());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +98,8 @@ public class ItemListActivity extends AppCompatActivity
             ItemListFragment fragment = new ItemListFragment();
             fragment.setArguments(arguments);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            toolbar.setTitle(file.getName());
+            mTitleList.addLast(file.getName());
+            toolbar.setTitle((String)mTitleList.getLast());
 
             getSupportFragmentManager().beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
@@ -113,7 +119,10 @@ public class ItemListActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("戻る");
+        String pop = (String) mTitleList.pollLast();
+        if(mTitleList.size() > 0) {
+            toolbar.setTitle((String)mTitleList.getLast());
+        }
         super.onBackPressed();
     }
 }
