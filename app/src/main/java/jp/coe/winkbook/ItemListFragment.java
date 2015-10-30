@@ -2,7 +2,9 @@ package jp.coe.winkbook;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ListFragment;
@@ -15,19 +17,11 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * A list fragment representing a list of Items. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link ItemDetailFragment}.
- * <p/>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
- */
 public class ItemListFragment extends ListFragment {
 
     private static final String TAG = "ItemListFragment";
 
+    private File mBaseDir;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -91,8 +85,7 @@ public class ItemListFragment extends ListFragment {
 
     private void checkFilePermission(){
         //TODO:ファイルをモデルとして扱う
-        File dir = Environment.getExternalStorageDirectory();
-        Log.d(TAG, "getExternalStorageDirectory " + dir.getPath());
+        Log.d(TAG, "getExternalStorageDirectory " + mBaseDir.getPath());
 
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -102,7 +95,7 @@ public class ItemListFragment extends ListFragment {
             );
 
         } else {
-            mFiles = Arrays.asList(dir.listFiles());
+            mFiles = Arrays.asList(mBaseDir.listFiles());
             Log.d(TAG,"mFiles " + mFiles.size());
 
             // TODO: replace with a real list adapter.
@@ -135,6 +128,21 @@ public class ItemListFragment extends ListFragment {
         if (!(activity instanceof Callbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
+
+        //最初のディレクトリ取得
+
+
+        if(getArguments() != null && getArguments().containsKey(Intent.EXTRA_STREAM)){
+            Uri fileUri = getArguments().getParcelable(Intent.EXTRA_STREAM);
+            //ストリームから開くファイルを判断
+            String path = fileUri.getPath();
+            Log.d(TAG,"getPath " + path);
+            mBaseDir = new File(path);
+        } else {
+            mBaseDir = Environment.getExternalStorageDirectory();
+
+        }
+
 
         mCallbacks = (Callbacks) activity;
     }

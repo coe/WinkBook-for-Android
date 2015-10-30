@@ -56,6 +56,16 @@ public class ItemListActivity extends AppCompatActivity
                     .setActivateOnItemClick(true);
         }
 
+//        //ストリームを受け取る
+//        Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+//
+//        //ストリームから開くファイルを判断
+//        String path = fileUri.getPath();
+//
+//        //ファイルをフラグメントに渡す
+
+
+
         // TODO: If exposing deep links into your app, handle intents here.
     }
 
@@ -65,13 +75,24 @@ public class ItemListActivity extends AppCompatActivity
      */
     @Override
     public void onItemSelected(File file) {
-        Log.d(TAG,"onItemSelected "+file.getName());
-        Log.d(TAG,"onItemSelected "+file.getPath());
+        Log.d(TAG, "onItemSelected " + file.getName());
+        Log.d(TAG, "onItemSelected " + file.getPath());
 
-        //ファイルを開く
-        Intent detailIntent = new Intent(this, PageActivity.class);
-        detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        startActivity(detailIntent);
+
+        if (file.isDirectory()) {
+            //さらに階層開く
+            Intent detailIntent = new Intent(this, ItemListActivity.class);
+            detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            startActivity(detailIntent);
+
+        } else {
+
+            //ファイルを開く
+            Intent detailIntent = new Intent(this, PageActivity.class);
+            detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            startActivity(detailIntent);
+        }
+
 
 //        if (mTwoPane) {
 //            // In two-pane mode, show the detail view in this activity by
