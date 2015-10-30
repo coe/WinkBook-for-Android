@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +26,8 @@ public class ItemListActivity extends AppCompatActivity
      */
     private boolean mTwoPane;
 
+    private ItemListFragment mFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,27 +46,28 @@ public class ItemListActivity extends AppCompatActivity
             }
         });
 
-        if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-
-            // In two-pane mode, list items should be given the
-            // 'activated' state when touched.
-            ((ItemListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.item_list))
-                    .setActivateOnItemClick(true);
-        }
-
-//        //ストリームを受け取る
-//        Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+//        if (findViewById(R.id.item_detail_container) != null) {
+//            // The detail container view will be present only in the
+//            // large-screen layouts (res/values-large and
+//            // res/values-sw600dp). If this view is present, then the
+//            // activity should be in two-pane mode.
+//            mTwoPane = true;
 //
-//        //ストリームから開くファイルを判断
-//        String path = fileUri.getPath();
-//
-//        //ファイルをフラグメントに渡す
+//            // In two-pane mode, list items should be given the
+//            // 'activated' state when touched.
+//            ((ItemListFragment) getSupportFragmentManager()
+//                    .findFragmentById(R.id.item_list))
+//                    .setActivateOnItemClick(true);
+//        }
+
+        //フラグメント追加
+        ItemListFragment fragment = new ItemListFragment();
+        // フラグメントをアクティビティに追加する FragmentTransaction を利用する
+        android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.frameLayout,fragment);
+//        transaction.add(R.id.fragment_container, mContentFragment, "fragment");
+        transaction.commit();
 
 
 
@@ -81,16 +86,18 @@ public class ItemListActivity extends AppCompatActivity
 
         if (file.isDirectory()) {
             //さらに階層開く
+            Log.d(TAG, "isDirectory");
             Bundle arguments = new Bundle();
             arguments.putParcelable(Intent.EXTRA_STREAM, Uri.fromFile(file));
             ItemListFragment fragment = new ItemListFragment();
             fragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.item_list, fragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                    .replace(R.id.frameLayout, fragment)
                     .addToBackStack(null)
                     .commit();
-
-
+            
         } else {
 
             //ファイルを開く

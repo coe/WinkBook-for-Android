@@ -20,9 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//TODO:バックキーでフォルダ登る
+
 public class ItemListFragment extends ListFragment {
 
     private static final String TAG = "ItemListFragment";
+
+    private static final File DEFAULT_DIR = Environment.getExternalStorageDirectory();
 
     private File mBaseDir;
 
@@ -160,8 +164,6 @@ public class ItemListFragment extends ListFragment {
 
         checkFilePermission();
 
-
-
         mCallbacks = (Callbacks) activity;
     }
 
@@ -178,14 +180,18 @@ public class ItemListFragment extends ListFragment {
         super.onListItemClick(listView, view, position, id);
         File file = mFiles.get(position);
         if(file.isDirectory()){
-            //リスト更新
-            mBaseDir = file;
-            mFiles = new ArrayList<File>(Arrays.asList(mBaseDir.listFiles()));
-            //
-            mAdapter.clear();
-            mAdapter.addAll(mFiles);
-            mAdapter.notifyDataSetChanged();
-            getListView().invalidateViews();
+//            //リスト更新
+//            mBaseDir = file;
+//            mFiles = new ArrayList<File>(Arrays.asList(mBaseDir.listFiles()));
+//            //
+//            mAdapter.clear();
+//            //一番上に、戻る列追加
+//
+//            mAdapter.addAll(mFiles);
+//            mAdapter.notifyDataSetChanged();
+//            getListView().invalidateViews();
+            mCallbacks.onItemSelected(file);
+
 
         } else {
 
