@@ -81,9 +81,15 @@ public class ItemListActivity extends AppCompatActivity
 
         if (file.isDirectory()) {
             //さらに階層開く
-            Intent detailIntent = new Intent(this, ItemListActivity.class);
-            detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-            startActivity(detailIntent);
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            ItemListFragment fragment = new ItemListFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_list, fragment)
+                    .addToBackStack(null)
+                    .commit();
+
 
         } else {
 

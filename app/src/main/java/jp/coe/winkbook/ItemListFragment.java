@@ -10,10 +10,13 @@ import android.os.Environment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,9 +43,11 @@ public class ItemListFragment extends ListFragment {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-    private List<File> mFiles = null;
+    private ArrayList<File> mFiles = null;
 
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
+
+    private FileArrayAdapter mAdapter;
 
 
     /**
@@ -77,11 +82,18 @@ public class ItemListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        checkFilePermission();
-
-
    }
+
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        super.onCreateView(inflater, container, savedInstanceState);
+//        //一回Viewを取り外す
+//        container.removeAllViews();
+//        View rootView = inflater.inflate(R.layout.activity_item_list, container,false);
+//        return rootView;
+//
+//    }
 
     private void checkFilePermission(){
         //TODO:ファイルをモデルとして扱う
@@ -95,17 +107,17 @@ public class ItemListFragment extends ListFragment {
             );
 
         } else {
-            mFiles = Arrays.asList(mBaseDir.listFiles());
+            mFiles = new ArrayList<File>(Arrays.asList(mBaseDir.listFiles()));
             Log.d(TAG,"mFiles " + mFiles.size());
 
             // TODO: replace with a real list adapter.
 
-            FileArrayAdapter adapter = new FileArrayAdapter(getActivity(),
+            mAdapter = new FileArrayAdapter(getActivity(),
                     R.layout.list_item,
                     mFiles
                     );
 
-            setListAdapter(adapter);
+            setListAdapter(mAdapter);
         }
     }
 
@@ -122,6 +134,7 @@ public class ItemListFragment extends ListFragment {
 
     @Override
     public void onAttach(Activity activity) {
+        Log.d(TAG,"onAttach");
         super.onAttach(activity);
 
         // Activities containing this fragment must implement its callbacks.
@@ -133,15 +146,20 @@ public class ItemListFragment extends ListFragment {
 
 
         if(getArguments() != null && getArguments().containsKey(Intent.EXTRA_STREAM)){
+            Log.d(TAG,"file");
+
             Uri fileUri = getArguments().getParcelable(Intent.EXTRA_STREAM);
             //ストリームから開くファイルを判断
             String path = fileUri.getPath();
             Log.d(TAG,"getPath " + path);
             mBaseDir = new File(path);
         } else {
+            Log.d(TAG,"noFile");
             mBaseDir = Environment.getExternalStorageDirectory();
-
         }
+
+        checkFilePermission();
+
 
 
         mCallbacks = (Callbacks) activity;
@@ -158,10 +176,24 @@ public class ItemListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
+        File file = mFiles.get(position);
+        if(file.isDirectory()){
+            //リスト更新
+            mBaseDir = file;
+            mFiles = new ArrayList<File>(Arrays.asList(mBaseDir.listFiles()));
+            //
+            mAdapter.clear();
+            mAdapter.addAll(mFiles);
+            mAdapter.notifyDataSetChanged();
+            getListView().invalidateViews();
 
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(mFiles.get(position));
+        } else {
+
+            // Notify the active callbacks interface (the activity, if the
+            // fragment is attached to one) that an item has been selected.
+            mCallbacks.onItemSelected(file);
+        }
+
     }
 
     @Override
