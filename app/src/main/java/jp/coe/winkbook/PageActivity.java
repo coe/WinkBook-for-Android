@@ -226,7 +226,8 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         }
     };
 
-    private void toggle() {
+    @Override
+    public void toggle() {
         if (mVisible) {
             hide();
         } else {

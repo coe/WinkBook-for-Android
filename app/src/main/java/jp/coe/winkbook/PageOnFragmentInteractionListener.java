@@ -5,4 +5,5 @@ package jp.coe.winkbook;
  */
 public interface PageOnFragmentInteractionListener {
     public void onClose();
+    public void toggle(); //フルスクリーンにする
 }

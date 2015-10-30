@@ -60,6 +60,14 @@ public class PDFRenderFragment extends WIKPageFragment  {
             index = savedInstanceState.getInt("current_page", 0);
         }
         showPage(index);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.toggle();
+
+            }
+        });
     }
 
     @Override
