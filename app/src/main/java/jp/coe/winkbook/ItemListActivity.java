@@ -66,11 +66,10 @@ public class ItemListActivity extends AppCompatActivity
             // フラグメントをアクティビティに追加する FragmentTransaction を利用する
             android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.add(R.id.frameLayout,fragment);
+            transaction.add(R.id.frameLayout, fragment);
             transaction.commit();
 
         }
-
 
 
         // TODO: If exposing deep links into your app, handle intents here.
@@ -93,6 +92,8 @@ public class ItemListActivity extends AppCompatActivity
             arguments.putParcelable(Intent.EXTRA_STREAM, Uri.fromFile(file));
             ItemListFragment fragment = new ItemListFragment();
             fragment.setArguments(arguments);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle(file.getName());
 
             getSupportFragmentManager().beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
@@ -107,27 +108,12 @@ public class ItemListActivity extends AppCompatActivity
             detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
             startActivity(detailIntent);
         }
-
-
-//        if (mTwoPane) {
-//            // In two-pane mode, show the detail view in this activity by
-//            // adding or replacing the detail fragment using a
-//            // fragment transaction.
-//            Bundle arguments = new Bundle();
-//            arguments.putString(ItemDetailFragment.ARG_ITEM_ID, id);
-//            ItemDetailFragment fragment = new ItemDetailFragment();
-//            fragment.setArguments(arguments);
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.item_detail_container, fragment)
-//                    .commit();
-//
-//        } else {
-//            // In single-pane mode, simply start the detail activity
-//            // for the selected item ID.
-//            Intent detailIntent = new Intent(this, ItemDetailActivity.class);
-//            detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
-//            startActivity(detailIntent);
-//        }
     }
 
+    @Override
+    public void onBackPressed() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("戻る");
+        super.onBackPressed();
+    }
 }
