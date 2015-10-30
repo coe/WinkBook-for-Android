@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
+import java.util.logging.Logger;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -103,6 +105,30 @@ public class EpubRenderFragment extends WIKPageFragment {
         }
 
         showPage(index);
+
+        webView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch");
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.d("TouchEvent", "getAction()" + "ACTION_DOWN");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        Log.d("TouchEvent", "getAction()" + "ACTION_UP");
+                        mListener.toggle();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        Log.d("TouchEvent", "getAction()" + "ACTION_MOVE");
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        Log.d("TouchEvent", "getAction()" + "ACTION_CANCEL");
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     /**
