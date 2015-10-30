@@ -1,7 +1,11 @@
 package jp.coe.winkbook;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -12,9 +16,11 @@ import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -108,9 +114,6 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 //        File file = new File(path);
 
         Log.d(TAG, "ファイルmimetype " + getMimeType(path));
-
-
-
         setContentView(R.layout.activity_page);
 
         mVisible = true;
@@ -119,17 +122,28 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         //レンダーフラグメント生成
         Bundle bundle = new Bundle();
         bundle.putParcelable(Intent.EXTRA_STREAM, fileUri);
-        switch (getMimeType(path)){
-            case MIMETYPE_EPUB:
-                //EpubRenderFragment追加
-                mContentFragment = new EpubRenderFragment();
+        String mime = getMimeType(path);
+        if(!TextUtils.isEmpty(mime)) {
+            switch (mime){
+                case MIMETYPE_EPUB:
+                    //EpubRenderFragment追加
+                    mContentFragment = new EpubRenderFragment();
 
-                break;
-            case MIMETYPE_PDF:
-                //PDFRenderFragment追加
-                mContentFragment = new PDFRenderFragment();
-                break;
+                    break;
+                case MIMETYPE_PDF:
+                    //PDFRenderFragment追加
+                    mContentFragment = new PDFRenderFragment();
+                    break;
+
+            }
         }
+
+        if(mContentFragment == null){
+            //未対応
+
+            return;
+        }
+
         mContentFragment.setArguments(bundle);
 
         // フラグメントをアクティビティに追加する FragmentTransaction を利用する
@@ -155,8 +169,40 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     }
 
     @Override
+    protected void onResume() {
+        Log.d(TAG,"onResume");
+        super.onResume();
+        if(mContentFragment == null) {
+            Log.d(TAG,"アラート表示");
+            FragmentManager manager = getFragmentManager();
+            TestDialogFragment dialog = new TestDialogFragment();
+            dialog.show(manager, "dialog");
+        }
+    }
+
+    public static class TestDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            final Activity activity = getActivity();
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setMessage(android.R.string.httpErrorUnsupportedScheme)
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //戻る
+                            activity.finish();
+                        }
+                    });
+            return builder.create();
+        }
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        if(mContentFragment == null){
+            return;
+        }
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
@@ -272,7 +318,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                mContentFragment.nextPage();
+                if(mContentFragment != null) mContentFragment.nextPage();
 
             }
         });
@@ -283,7 +329,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                mContentFragment.backPage();
+                if(mContentFragment != null) mContentFragment.backPage();
 
             }
         });

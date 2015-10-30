@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//TODO:バックキーでフォルダ登る
 
 public class ItemListFragment extends ListFragment {
 

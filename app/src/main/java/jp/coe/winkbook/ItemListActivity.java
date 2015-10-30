@@ -97,7 +97,7 @@ public class ItemListActivity extends AppCompatActivity
                     .replace(R.id.frameLayout, fragment)
                     .addToBackStack(null)
                     .commit();
-            
+
         } else {
 
             //ファイルを開く
