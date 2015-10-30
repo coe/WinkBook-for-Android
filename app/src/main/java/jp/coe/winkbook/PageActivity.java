@@ -139,9 +139,6 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 //        transaction.add(R.id.fragment_container, mContentFragment, "fragment");
         transaction.commit();
 
-//        mContentView = findViewById(R.id.fullscreen_content);
-
-
         // Set up the user interaction to manually show or hide the system UI.
 //        mContentFragment.getView().setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -155,9 +152,6 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-
-        //とりあえずPDFをPdfRendererで表示
-//        loadPdf();
     }
 
     @Override

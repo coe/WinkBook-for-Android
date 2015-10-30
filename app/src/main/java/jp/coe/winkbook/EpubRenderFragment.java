@@ -1,6 +1,7 @@
 package jp.coe.winkbook;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.pdf.PdfRenderer;
@@ -55,6 +56,7 @@ public class EpubRenderFragment extends WIKPageFragment {
     private String mCurrentPageString;
     private int currentPage = 0;
     private Book mBook;
+    private File mFile;
 
     /**
      * Use this factory method to create a new instance of
@@ -173,11 +175,9 @@ public class EpubRenderFragment extends WIKPageFragment {
 
             //TODO:この辺でEpub初期化
             //inputsteream生成
+            mFile = getFile();
 
-            File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard, "211829.epub");
-
-            InputStream epubInputStream = new FileInputStream(file);
+            InputStream epubInputStream = new FileInputStream(mFile);
 
             mBook = (new EpubReader()).readEpub(epubInputStream);
 

@@ -1,6 +1,7 @@
 package jp.coe.winkbook;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
@@ -32,6 +33,8 @@ public class PDFRenderFragment extends WIKPageFragment  {
 
     private PageOnFragmentInteractionListener mListener;
 
+    private File mFile;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +65,8 @@ public class PDFRenderFragment extends WIKPageFragment  {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mFile = getFile();
+
         try {
             mListener = (PageOnFragmentInteractionListener) activity;
 //            mListener.renderFragment(this);
@@ -115,10 +120,8 @@ public class PDFRenderFragment extends WIKPageFragment  {
      */
     private void openRenderer() throws IOException {
         // Reading a PDF file from the assets directory.
-        File sdcard = Environment.getExternalStorageDirectory();
 
-        fileDescriptor = ParcelFileDescriptor.open(new File(sdcard, "ashita01_a_sd.pdf"), ParcelFileDescriptor.MODE_READ_ONLY);
-//        fileDescriptor = activity.getAssets().openFd("canon_in_d.pdf").getParcelFileDescriptor();
+        fileDescriptor = ParcelFileDescriptor.open(mFile, ParcelFileDescriptor.MODE_READ_ONLY);
 
         // This is the PdfRenderer we use to render the PDF.
         pdfRenderer = new PdfRenderer(fileDescriptor);
