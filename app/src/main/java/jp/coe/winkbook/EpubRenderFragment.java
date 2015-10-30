@@ -197,9 +197,7 @@ public class EpubRenderFragment extends WIKPageFragment {
         super.onAttach(activity);
         try {
             mListener = (PageOnFragmentInteractionListener) activity;
-//            mListener.renderFragment(this);
 
-            //TODO:この辺でEpub初期化
             //inputsteream生成
             mFile = getFile();
 
@@ -218,15 +216,6 @@ public class EpubRenderFragment extends WIKPageFragment {
             // Log the tale of contents
 
             logTableOfContents(mBook.getTableOfContents().getTocReferences(), 0);
-
-//            byte[] data = book.getContents().get(3).getData();
-//
-//            Bitmap page = BitmapFactory.decodeByteArray(data,0,data.length);
-
-//            Resource r = book.getSpine().getResource(3);
-//            String text = new String(r.getData());
-//
-//            mCurrentPageString = text;//new String(book.getContents().get(3).getData());
 
 
         } catch (ClassCastException e) {
