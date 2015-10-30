@@ -83,10 +83,19 @@ public class WinkFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG,"onCreateView");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wink, container, false);
         mPreview = (CameraSourcePreview) view.findViewById(R.id.preview);
 
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        Log.d(TAG,"onStart");
+
+        super.onStart();
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
@@ -95,8 +104,8 @@ public class WinkFragment extends Fragment {
         } else {
             requestCameraPermission();
         }
-        return view;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -353,19 +362,22 @@ public class WinkFragment extends Fragment {
             return;
         }
 
+        //アラート
+        ActivityCompat.requestPermissions(thisActivity, permissions,
+                RC_HANDLE_CAMERA_PERM);
 
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
-            }
-        };
-
-        Snackbar.make(getActivity().findViewById(R.id.root_layout), android.R.string.dialog_alert_title,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(android.R.string.ok, listener)
-                .show();
+//        View.OnClickListener listener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ActivityCompat.requestPermissions(thisActivity, permissions,
+//                        RC_HANDLE_CAMERA_PERM);
+//            }
+//        };
+//
+//        Snackbar.make(getActivity().findViewById(R.id.preview), android.R.string.dialog_alert_title,
+//                Snackbar.LENGTH_INDEFINITE)
+//                .setAction(android.R.string.ok, listener)
+//                .show();
     }
 
     /**

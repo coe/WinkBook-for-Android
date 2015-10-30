@@ -27,17 +27,8 @@ public class FileArrayAdapter extends ArrayAdapter<File> {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-//    public FileArrayAdapter(Context context, int resource, int textViewResourceId, List<File> objects) {
-//        super(context, resource, textViewResourceId, objects);
-//        mResource = resource;
-//        mFiles = objects;
-//        mTextViewResourceId = textViewResourceId;
-//        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // convertViewは使い回しされている可能性があるのでnullの時だけ新しく作る
         View view;
         if (convertView != null) {
             view = convertView;

@@ -32,15 +32,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubReader;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EpubRenderFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EpubRenderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EpubRenderFragment extends Fragment implements WIKPageInterface {
 
     private static final String TAG = "EpubRenderFragment";

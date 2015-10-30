@@ -1,12 +1,14 @@
 package jp.coe.winkbook;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,11 +16,15 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /*
  *
@@ -34,6 +40,8 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
     private static final String TAG = "PageActivity";
 
+    private static final String EPUB_MYMETYPE = "application/epub+zip";
+    private static final String PDF_MYMETYPE = "application/pdf";
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -62,10 +70,41 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
     private final Handler mMainThreadHandler = new Handler();
 
+    /**
+     * ファイルパスの拡張子から MIME Type を取得する
+     *
+     * @param filePath
+     * @return
+     */
+    public static String getMimeType(String filePath){
+        String mimeType = null;
+        String extension = null;
+        try{
+            extension = MimeTypeMap.getFileExtensionFromUrl(URLEncoder.encode(filePath, "UTF-8"));
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+        if(extension != null){
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            mimeType = mime.getMimeTypeFromExtension(extension);
+        }
+        return mimeType;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ストリームを受け取る
+        Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+
+        //ストリームから開くファイルを判断
+        String path = fileUri.getPath();
+//        File file = new File(path);
+
+        Log.d(TAG, "ファイルmimetype " + getMimeType(path));
+        //
 
         setContentView(R.layout.activity_page);
 
@@ -86,6 +125,9 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+
 
         //とりあえずPDFをPdfRendererで表示
 //        loadPdf();
@@ -291,4 +333,5 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
             }
         });
     }
+
 }
