@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class PDFRenderFragment extends Fragment implements WIKPageInterface {
+public class PDFRenderFragment extends WIKPageFragment  {
 
     private static final String TAG = "PDFRenderFragment";
 
@@ -64,7 +64,7 @@ public class PDFRenderFragment extends Fragment implements WIKPageInterface {
         super.onAttach(activity);
         try {
             mListener = (PageOnFragmentInteractionListener) activity;
-            mListener.renderFragment(this);
+//            mListener.renderFragment(this);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");

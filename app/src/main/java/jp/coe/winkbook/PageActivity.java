@@ -1,6 +1,7 @@
 package jp.coe.winkbook;
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,8 +42,8 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
     private static final String TAG = "PageActivity";
 
-    private static final String EPUB_MYMETYPE = "application/epub+zip";
-    private static final String PDF_MYMETYPE = "application/pdf";
+    private static final String MIMETYPE_EPUB = "application/epub+zip";
+    private static final String MIMETYPE_PDF = "application/pdf";
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -61,12 +63,14 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
      */
     private static final int UI_ANIMATION_DELAY = 300;
 
-    private View mContentView;
+//    private View mContentView;
+    private WIKPageFragment mContentFragment;
+
     private View mControlsView;
     private boolean mVisible;
 
     //PDF表示フラグメント
-    private WIKPageInterface mPDFRenderFragment;
+//    private WIKPageFragment mPDFRenderFragment;
 
     private final Handler mMainThreadHandler = new Handler();
 
@@ -104,29 +108,52 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 //        File file = new File(path);
 
         Log.d(TAG, "ファイルmimetype " + getMimeType(path));
-        //
+
+
 
         setContentView(R.layout.activity_page);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
+
+        //レンダーフラグメント生成
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Intent.EXTRA_STREAM, fileUri);
+        switch (getMimeType(path)){
+            case MIMETYPE_EPUB:
+                //EpubRenderFragment追加
+                mContentFragment = new EpubRenderFragment();
+
+                break;
+            case MIMETYPE_PDF:
+                //PDFRenderFragment追加
+                mContentFragment = new PDFRenderFragment();
+                break;
+        }
+        mContentFragment.setArguments(bundle);
+
+        // フラグメントをアクティビティに追加する FragmentTransaction を利用する
+        android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.fragment_container,mContentFragment);
+//        transaction.add(R.id.fragment_container, mContentFragment, "fragment");
+        transaction.commit();
+
+//        mContentView = findViewById(R.id.fullscreen_content);
 
 
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+//        mContentFragment.getView().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                toggle();
+//            }
+//        });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-
-
 
 
         //とりあえずPDFをPdfRendererで表示
@@ -189,7 +216,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
             // Note that some of these constants are new as of API 16 (Jelly Bean)
             // and API 19 (KitKat). It is safe to use them, as they are inlined
             // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+            mContentFragment.getView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -202,7 +229,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     @SuppressLint("InlinedApi")
     private void show() {
         // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        mContentFragment.getView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
@@ -240,76 +267,10 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void loadPdf(){
-        File sdcard = Environment.getExternalStorageDirectory();
-        Log.d(TAG,"path "+sdcard.getPath());
-        ParcelFileDescriptor fd = null;
-        PdfRenderer renderer = null;
-        PdfRenderer.Page page = null;
-        try {
-            // SDカード直下からtest.pdfを読み込み、1ページ目を取得
-            try {
-                fd = ParcelFileDescriptor.open(new File(sdcard, "ashita01_a_sd.pdf"), ParcelFileDescriptor.MODE_READ_ONLY);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                renderer = new PdfRenderer(fd);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            page = renderer.openPage(0);
-
-            ImageView view = (ImageView) findViewById(R.id.fullscreen_content);
-            int viewWidth = view.getWidth();
-            int viewHeight = view.getHeight();
-            int pdfWidth = page.getWidth();
-            int pdfHeight = page.getHeight();
-            Log.i("test", "viewWidth=" + viewWidth + ", viewHeight=" + viewHeight
-                    + ", pdfWidth=" + pdfWidth + ", pdfHeight=" + pdfHeight);
-
-            // 縦横比合うように計算
-            float wRatio = 1;//viewWidth / pdfWidth;
-            float hRatio = 1;//viewHeight / pdfHeight;
-            if (wRatio <= hRatio) {
-                viewHeight = (int) Math.ceil(pdfHeight * wRatio);
-            } else {
-                viewWidth = (int) Math.ceil(pdfWidth * hRatio);
-            }
-            Log.i("test", "viewWidth=" + viewWidth + ", viewHeight=" + viewHeight);
-
-            // Bitmap生成して描画
-            Bitmap bitmap = Bitmap.createBitmap(pdfWidth, pdfHeight, Bitmap.Config.ARGB_8888);
-            page.render(bitmap, new Rect(0, 0, pdfWidth, pdfHeight), null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-
-            view.setImageBitmap(bitmap);
-        } finally {
-            try {
-                if (fd != null) {
-                    fd.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (page != null) {
-                page.close();
-            }
-            if (renderer != null) {
-                renderer.close();
-            }
-        }
-    }
-
-    @Override
-    public void renderFragment(WIKPageInterface fragment) {
-        mPDFRenderFragment = fragment;
-    }
-
     @Override
     public void onFragmentInteraction(Uri uri) {
 
-        Log.d(TAG,"onFragmentInteraction");
+        Log.d(TAG, "onFragmentInteraction");
     }
 
     @Override
@@ -317,7 +278,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                mPDFRenderFragment.nextPage();
+                mContentFragment.nextPage();
 
             }
         });
@@ -328,7 +289,7 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                mPDFRenderFragment.backPage();
+                mContentFragment.backPage();
 
             }
         });

@@ -32,7 +32,7 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubReader;
 
-public class EpubRenderFragment extends Fragment implements WIKPageInterface {
+public class EpubRenderFragment extends WIKPageFragment {
 
     private static final String TAG = "EpubRenderFragment";
 
@@ -169,7 +169,7 @@ public class EpubRenderFragment extends Fragment implements WIKPageInterface {
         super.onAttach(activity);
         try {
             mListener = (PageOnFragmentInteractionListener) activity;
-            mListener.renderFragment(this);
+//            mListener.renderFragment(this);
 
             //TODO:この辺でEpub初期化
             //inputsteream生成

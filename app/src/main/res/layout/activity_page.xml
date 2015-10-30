@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:background="#0099cc"
+    android:id="@+id/fragment_container"
     tools:context="jp.coe.winkbook.PageActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -11,11 +12,11 @@
         android:id="@+id/wink_fragment" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true"
         android:gravity="center" />
-    <fragment
-        android:name="jp.coe.winkbook.EpubRenderFragment"
-        android:id="@+id/fullscreen_content" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:keepScreenOn="true"
-        android:gravity="center" />
+    <!--<fragment-->
+        <!--android:name="jp.coe.winkbook.EpubRenderFragment"-->
+        <!--android:id="@+id/fullscreen_content" android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" android:keepScreenOn="true"-->
+        <!--android:gravity="center" />-->
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
