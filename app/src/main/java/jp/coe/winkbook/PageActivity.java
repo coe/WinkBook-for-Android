@@ -146,12 +146,13 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
         mContentFragment.setArguments(bundle);
 
-        // フラグメントをアクティビティに追加する FragmentTransaction を利用する
-        android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.fragment_container,mContentFragment);
-//        transaction.add(R.id.fragment_container, mContentFragment, "fragment");
-        transaction.commit();
+        if (savedInstanceState == null) {
+            // フラグメントをアクティビティに追加する FragmentTransaction を利用する
+            android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.add(R.id.fragment_container,mContentFragment);
+            transaction.commit();
+        }
 
         // Set up the user interaction to manually show or hide the system UI.
 //        mContentFragment.getView().setOnClickListener(new View.OnClickListener() {

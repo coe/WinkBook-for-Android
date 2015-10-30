@@ -60,14 +60,16 @@ public class ItemListActivity extends AppCompatActivity
 //                    .setActivateOnItemClick(true);
 //        }
 
-        //フラグメント追加
-        ItemListFragment fragment = new ItemListFragment();
-        // フラグメントをアクティビティに追加する FragmentTransaction を利用する
-        android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.frameLayout,fragment);
-//        transaction.add(R.id.fragment_container, mContentFragment, "fragment");
-        transaction.commit();
+        if (savedInstanceState == null) {
+            //フラグメント追加
+            ItemListFragment fragment = new ItemListFragment();
+            // フラグメントをアクティビティに追加する FragmentTransaction を利用する
+            android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.add(R.id.frameLayout,fragment);
+            transaction.commit();
+
+        }
 
 
 
