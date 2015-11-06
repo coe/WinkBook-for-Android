@@ -1,17 +1,24 @@
 package jp.coe.winkbook;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -40,35 +47,52 @@ public class ItemListActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mTitleList = new LinkedList();
         mTitleList.addLast(getTitle());
-        toolbar.setTitle((String)mTitleList.getLast());
+        toolbar.setTitle((String) mTitleList.getLast());
 
-//        if (findViewById(R.id.item_detail_container) != null) {
-//            // The detail container view will be present only in the
-//            // large-screen layouts (res/values-large and
-//            // res/values-sw600dp). If this view is present, then the
-//            // activity should be in two-pane mode.
-//            mTwoPane = true;
-//
-//            // In two-pane mode, list items should be given the
-//            // 'activated' state when touched.
-//            ((ItemListFragment) getSupportFragmentManager()
-//                    .findFragmentById(R.id.item_list))
-//                    .setActivateOnItemClick(true);
-//        }
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FragmentManager dialogmanager = getFragmentManager();
+        final android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //license
+                LicenseDialogFragment dialog = new LicenseDialogFragment();
+                dialog.show(dialogmanager, "dialog");
+
+            }
+        });
 
         if (savedInstanceState == null) {
             //フラグメント追加
             ItemListFragment fragment = new ItemListFragment();
             // フラグメントをアクティビティに追加する FragmentTransaction を利用する
-            android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.add(R.id.frameLayout, fragment);
             transaction.commit();
 
         }
 
+    }
 
-        // TODO: If exposing deep links into your app, handle intents here.
+    public static class LicenseDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            final Activity activity = getActivity();
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            WebView webview = new WebView(getActivity());
+            webview.loadUrl("file:///android_asset/lisences.html");
+
+            builder.setView(webview)
+//                    .setMessage(android.R.string.httpErrorUnsupportedScheme)
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //戻る
+                        }
+                    });
+            return builder.create();
+        }
     }
 
     /**

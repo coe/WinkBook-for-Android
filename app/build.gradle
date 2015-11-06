@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "jp.coe.winkbook"
-        minSdkVersion 11
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -35,6 +35,5 @@ dependencies {
 
     compile 'jp.coe.winkfragment:winkfragment:1.0.0'
 
-    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
 
 }
