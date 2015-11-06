@@ -8,7 +8,7 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
     <fragment
-        android:name="jp.coe.winkbook.WinkFragment"
+        android:name="jp.coe.winkfragment.WinkFragment"
         android:id="@+id/wink_fragment" android:layout_width="match_parent"
         android:layout_height="match_parent" android:keepScreenOn="true"
         android:gravity="center" />

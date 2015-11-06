@@ -7,32 +7,23 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import android.support.design.widget.Snackbar;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import jp.coe.winkfragment.WinkFragment;
 
 /*
  *
@@ -307,12 +298,6 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-        Log.d(TAG, "onFragmentInteraction");
     }
 
     @Override

@@ -21,7 +21,7 @@ import android.graphics.Paint;
 
 import com.google.android.gms.vision.face.Face;
 
-import jp.coe.winkbook.ui.camera.GraphicOverlay;
+import jp.coe.winkfragment.camera.GraphicOverlay;
 
 /**
  * Graphic instance for rendering face position, orientation, and landmarks within an associated

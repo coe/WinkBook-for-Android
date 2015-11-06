@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -29,9 +27,7 @@ import com.google.android.gms.vision.face.FaceDetector;
 
 import java.io.IOException;
 
-import jp.coe.winkbook.ui.camera.CameraSourcePreview;
-import jp.coe.winkbook.ui.camera.GraphicOverlay;
-
+import jp.coe.winkfragment.camera.CameraSourcePreview;
 
 public class MainActivity extends AppCompatActivity {
 
