@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -125,8 +126,14 @@ public class ItemListActivity extends AppCompatActivity
         } else {
 
             //ファイルを開く
+            Uri fileUri = Uri.fromFile(file);
             Intent detailIntent = new Intent(this, PageActivity.class);
-            detailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            String path = fileUri.getPath();
+            String mime = PageActivity.getMimeType(path);
+            Log.d(TAG,"fileUri "+fileUri);
+            Log.d(TAG,"mime "+mime);
+            detailIntent.setDataAndType(fileUri, mime);
+            detailIntent.setAction(android.content.Intent.ACTION_VIEW);
             startActivity(detailIntent);
         }
     }

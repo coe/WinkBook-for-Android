@@ -39,8 +39,8 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
     private static final String TAG = "PageActivity";
 
-    private static final String MIMETYPE_EPUB = "application/epub+zip";
-    private static final String MIMETYPE_PDF = "application/pdf";
+    public static final String MIMETYPE_EPUB = "application/epub+zip";
+    public static final String MIMETYPE_PDF = "application/pdf";
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -98,11 +98,17 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         super.onCreate(savedInstanceState);
 
         //ストリームを受け取る
-        Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        Uri fileUri = null;
+        Intent intent = getIntent();
+        if (intent.getData() == null) {
+            // error
+            Log.w(TAG,"file not found");
+        } else {
+            fileUri = intent.getData();
+        }
 
         //ストリームから開くファイルを判断
         String path = fileUri.getPath();
-//        File file = new File(path);
 
         Log.d(TAG, "ファイルmimetype " + getMimeType(path));
         setContentView(R.layout.activity_page);

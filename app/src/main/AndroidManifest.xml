@@ -21,8 +21,15 @@
         <activity
             android:name=".PageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_page"
+            android:label="@string/app_name"
             android:theme="@style/FullscreenTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" android:mimeType="application/epub+zip" />
+                <data android:scheme="file" android:mimeType="application/pdf" />
+
+            </intent-filter>
         </activity>
         <activity
             android:name=".ItemListActivity"
