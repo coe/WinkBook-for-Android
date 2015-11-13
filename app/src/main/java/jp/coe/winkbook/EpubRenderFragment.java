@@ -119,6 +119,9 @@ public class EpubRenderFragment extends WIKPageFragment {
                 return false;
             }
         });
+
+        start(btnNext,btnPrevious);
+
     }
 
     /**

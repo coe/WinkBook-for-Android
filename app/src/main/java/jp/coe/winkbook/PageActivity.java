@@ -24,6 +24,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import jp.coe.winkfragment.WinkFragment;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 /*
  *
@@ -151,17 +153,6 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
             transaction.commit();
         }
 
-        // Set up the user interaction to manually show or hide the system UI.
-//        mContentFragment.getView().setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                toggle();
-//            }
-//        });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
     }
@@ -175,6 +166,8 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
             FragmentManager manager = getFragmentManager();
             TestDialogFragment dialog = new TestDialogFragment();
             dialog.show(manager, "dialog");
+        } else {
+
         }
     }
 
@@ -326,6 +319,16 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
 
             }
         });
+    }
+
+    @Override
+    public void onLeftClose() {
+        this.onLongClose();
+    }
+
+    @Override
+    public void onRightClose() {
+        this.onClose();
     }
 
 }

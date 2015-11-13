@@ -19,10 +19,14 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.IOException;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 
 public class PDFRenderFragment extends WIKPageFragment  {
 
     private static final String TAG = "PDFRenderFragment";
+
 
     private ParcelFileDescriptor fileDescriptor;
     private PdfRenderer pdfRenderer;
@@ -68,6 +72,9 @@ public class PDFRenderFragment extends WIKPageFragment  {
 
             }
         });
+
+        start(btnNext,btnPrevious);
+
     }
 
     @Override

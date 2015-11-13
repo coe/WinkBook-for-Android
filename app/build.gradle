@@ -33,7 +33,7 @@ dependencies {
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:support-v4:23.1.0'
 
-    compile 'jp.coe.winkfragment:winkfragment:1.0.0'
+    compile 'jp.coe.winkfragment:winkfragment:1.1.2'
 
-
+    compile 'com.github.deano2390:MaterialShowcaseView:1.0.5@aar'
 }
