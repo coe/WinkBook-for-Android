@@ -25,16 +25,27 @@
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="file" android:mimeType="application/epub+zip" />
-                <data android:scheme="file" android:mimeType="application/pdf" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="application/epub+zip"
+                    android:scheme="file" />
+                <data
+                    android:mimeType="application/pdf"
+                    android:scheme="file" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ItemListActivity"
             android:label="@string/title_item_list"
             android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/SplashTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
