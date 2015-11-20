@@ -321,14 +321,16 @@ public class PageActivity extends AppCompatActivity implements WinkFragment.OnFr
         });
     }
 
-    @Override
+//    @Override
     public void onLeftClose() {
-        this.onLongClose();
+
+//        this.onLongClose();
     }
 
-    @Override
+//    @Override
     public void onRightClose() {
-        this.onClose();
+
+//        this.onClose();
     }
 
 }
