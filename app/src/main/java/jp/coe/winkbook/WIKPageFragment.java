@@ -49,12 +49,10 @@ abstract public class WIKPageFragment extends android.support.v4.app.Fragment {
 
         sequence.setConfig(config);
 
-        sequence.addSequenceItem(btnNext,
-                "軽く目を閉じることでページめくりが可能です。" +
-                        "右目を閉じっぱなしで早送りできます", "次へ");
+        sequence.addSequenceItem(btnNext, getString(R.string.material_showcase_sequence_1), getString(R.string.next_button_label));
 
         sequence.addSequenceItem(btnPrevious,
-                "左目を閉じっぱなしでページの巻き戻しが可能です", "START");
+                getString(R.string.material_showcase_sequence_2), getString(android.R.string.ok));
 
 
         sequence.start();
